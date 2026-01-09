@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"adventofcode/src"
+	"fmt"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	solutions := []func(){src.Day1Part1, src.Day1Part2}
+	for i, sol := range solutions {
+		fmt.Printf("Solving Day %d Part %d\n", i/2, i%2+1)
+		sol()
+		fmt.Println()
+	}
 }
