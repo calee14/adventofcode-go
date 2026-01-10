@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	solutions := []func(){src.Day1Part1, src.Day1Part2, src.Day2Part1, src.Day2Part2}
+	solutions := []func(){src.Day1Part1, src.Day1Part2, src.Day2Part1, src.Day2Part2, src.Day3Part1, src.Day3Part2}
 	for i, sol := range solutions {
 		fmt.Printf("Solving Day %d Part %d\n", i/2, i%2+1)
 		sol()
