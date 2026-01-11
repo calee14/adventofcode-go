@@ -188,7 +188,7 @@ func Day3Part1() {
 	}
 
 	in_region := func(x int, y int) bool {
-		return x >= 0 && x < len(data) && y >= 0 && y < len(data[0])
+		return x >= 0 && x < len(grid) && y >= 0 && y < len(grid[0])
 	}
 
 	result := 0
@@ -197,7 +197,7 @@ func Day3Part1() {
 		for j := range len(grid[0]) {
 			temp_i := i
 			temp_j := j
-			if data[i][j] != '.' && unicode.IsDigit(rune(grid[i][j])) {
+			if grid[i][j] != '.' && unicode.IsDigit(rune(grid[i][j])) {
 				has_adj_symbol := false
 				number := 0
 				dirs := []IntPair{
@@ -235,6 +235,25 @@ func Day3Part1() {
 	fmt.Println(result)
 }
 
+func read_number(i int, j int, grid [][]byte, in_region func(int, int) bool) int {
+	number := 0
+	// Start at the beginning
+	// of the number
+	for in_region(i, j) && unicode.IsDigit(rune(grid[i][j])) {
+		j -= 1
+	}
+	j += 1
+
+	for in_region(i, j) && unicode.IsDigit(rune(grid[i][j])) {
+
+		number = number*10 + int(grid[i][j]-'0')
+		grid[i][j] = '.'
+		j += 1
+	}
+
+	return number
+}
+
 func Day3Part2() {
 	data, err := ReadFile("data/day3.txt")
 	if err != nil {
@@ -247,19 +266,16 @@ func Day3Part2() {
 		grid[i] = []byte(line)
 	}
 
-	in_region := func(x int, y int) bool {
-		return x >= 0 && x < len(data) && y >= 0 && y < len(data[0])
-	}
-
 	result := 0
 
 	for i := range len(grid) {
 		for j := range len(grid[0]) {
 			temp_i := i
 			temp_j := j
-			if data[i][j] != '.' && unicode.IsDigit(rune(grid[i][j])) {
-				has_adj_symbol := false
-				number := 0
+			if grid[temp_i][temp_j] == '*' {
+				in_region := func(x int, y int) bool {
+					return x >= 0 && x < len(grid) && y >= 0 && y < len(grid[0])
+				}
 				dirs := []IntPair{
 					{1, 0},
 					{1, 1},
@@ -270,23 +286,19 @@ func Day3Part2() {
 					{0, -1},
 					{1, -1},
 				}
-				for in_region(temp_i, temp_j) && unicode.IsDigit(rune(grid[temp_i][temp_j])) {
-					for _, dir := range dirs {
-						if in_region(temp_i+dir.First, temp_j+dir.Second) &&
-							grid[temp_i+dir.First][temp_j+dir.Second] != '.' &&
-							!unicode.IsDigit(rune(grid[temp_i+dir.First][temp_j+dir.Second])) {
-							has_adj_symbol = true
-						}
+
+				prod := 1
+				adj_numbers := 0
+				for _, dir := range dirs {
+					if in_region(i+dir.First, j+dir.Second) &&
+						unicode.IsDigit(rune(grid[i+dir.First][j+dir.Second])) {
+						prod *= read_number(i+dir.First, j+dir.Second, grid, in_region)
+						adj_numbers += 1
 					}
-
-					number = number*10 + int(grid[temp_i][temp_j]-'0')
-					grid[temp_i][temp_j] = '.'
-					temp_j += 1
-
 				}
 
-				if has_adj_symbol {
-					result += number
+				if adj_numbers == 2 {
+					result += prod
 				}
 			}
 		}
