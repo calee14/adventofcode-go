@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"unicode"
@@ -302,6 +303,140 @@ func Day3Part2() {
 				}
 			}
 		}
+	}
+
+	fmt.Println(result)
+}
+
+func Map[T any, R any](in []T, fn func(T) R) []R {
+	out := make([]R, len(in))
+	for i, v := range in {
+		out[i] = fn(v)
+	}
+	return out
+}
+
+func Filter[T any](in []T, pred func(T) bool) []T {
+	out := make([]T, 0, len(in))
+	for _, v := range in {
+		if pred(v) {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
+func ToSet[T comparable](items []T) map[T]struct{} {
+	set := make(map[T]struct{}, len(items))
+	for _, v := range items {
+		set[v] = struct{}{}
+	}
+	return set
+}
+
+func Day4Part1() {
+	data, err := ReadFile("data/day4.txt")
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return
+	}
+
+	result := 0
+	for _, card := range data {
+		winning_nums := Map(Filter(strings.Split(strings.Split(
+			strings.Split(card, "|")[0],
+			":")[1], " "),
+			func(card string) bool {
+				return card != ""
+			}),
+			func(card string) int {
+				num, err := strconv.Atoi(card)
+				if err != nil {
+					fmt.Println("Error: ", err)
+					return -1
+				}
+				return num
+			})
+
+		our_nums := Map(Filter(strings.Split(
+			strings.Split(card, "|")[1], " "),
+			func(card string) bool {
+				return card != ""
+			}),
+			func(card string) int {
+				num, err := strconv.Atoi(card)
+				if err != nil {
+					fmt.Println("Error: ", err)
+					return -1
+				}
+				return num
+			})
+		winning_set := ToSet(winning_nums)
+		score := 0
+		for _, num := range our_nums {
+			if _, ok := winning_set[num]; ok {
+				score += 1
+			}
+		}
+
+		if score > 2 {
+			score = int(math.Pow(2, float64(score-1)))
+		}
+		result += score
+	}
+
+	fmt.Println(result)
+}
+
+func Day4Part2() {
+	data, err := ReadFile("data/day4.txt")
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return
+	}
+
+	result := 0
+	for _, card := range data {
+		winning_nums := Map(Filter(strings.Split(strings.Split(
+			strings.Split(card, "|")[0],
+			":")[1], " "),
+			func(card string) bool {
+				return card != ""
+			}),
+			func(card string) int {
+				num, err := strconv.Atoi(card)
+				if err != nil {
+					fmt.Println("Error: ", err)
+					return -1
+				}
+				return num
+			})
+
+		our_nums := Map(Filter(strings.Split(
+			strings.Split(card, "|")[1], " "),
+			func(card string) bool {
+				return card != ""
+			}),
+			func(card string) int {
+				num, err := strconv.Atoi(card)
+				if err != nil {
+					fmt.Println("Error: ", err)
+					return -1
+				}
+				return num
+			})
+		winning_set := ToSet(winning_nums)
+		score := 0
+		for _, num := range our_nums {
+			if _, ok := winning_set[num]; ok {
+				score += 1
+			}
+		}
+
+		if score > 2 {
+			score = int(math.Pow(2, float64(score-1)))
+		}
+		result += score
 	}
 
 	fmt.Println(result)
