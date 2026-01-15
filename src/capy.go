@@ -396,7 +396,12 @@ func Day4Part2() {
 	}
 
 	result := 0
-	for _, card := range data {
+	num_cards := make([]int, len(data))
+	for i := range num_cards {
+		num_cards[i] = 1
+	}
+
+	for i, card := range data {
 		winning_nums := Map(Filter(strings.Split(strings.Split(
 			strings.Split(card, "|")[0],
 			":")[1], " "),
@@ -426,17 +431,18 @@ func Day4Part2() {
 				return num
 			})
 		winning_set := ToSet(winning_nums)
-		score := 0
+		matches := 0
 		for _, num := range our_nums {
 			if _, ok := winning_set[num]; ok {
-				score += 1
+				matches += 1
 			}
 		}
-
-		if score > 2 {
-			score = int(math.Pow(2, float64(score-1)))
+		for d := 1; d <= matches; d++ {
+			if i+d < len(data) {
+				num_cards[i+d] += num_cards[i]
+			}
 		}
-		result += score
+		result += num_cards[i]
 	}
 
 	fmt.Println(result)
