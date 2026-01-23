@@ -15,6 +15,7 @@ func main() {
 		src.Day3Part2,
 		src.Day4Part1,
 		src.Day4Part2,
+		src.Day5Part1,
 	}
 	for i, sol := range solutions {
 		fmt.Printf("Solving Day %d Part %d\n", i/2, i%2+1)

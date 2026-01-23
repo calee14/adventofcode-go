@@ -3,6 +3,7 @@ package src
 import (
 	"fmt"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 	"unicode"
@@ -445,5 +446,57 @@ func Day4Part2() {
 		result += num_cards[i]
 	}
 
+	fmt.Println(result)
+}
+
+func Day5Part1() {
+	data, err := ReadFile("data/day5.txt")
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return
+	}
+
+	seeds := Map(
+		Filter(strings.Split(strings.Split(data[0], ":")[1], " "), func(s string) bool {
+			return s != ""
+		}),
+		func(s string) int {
+			num, err := strconv.Atoi(s)
+			if err != nil {
+				fmt.Println("Error: ", err)
+				return -1
+			}
+			return num
+		})
+
+	for i := 3; i < len(data); i++ {
+
+		modified := make([]bool, len(seeds))
+		for i < len(data) && data[i] != "" {
+			fmt.Println(data[i])
+			_map := Map(strings.Split(data[i], " "), func(s string) int {
+				num, err := strconv.Atoi(s)
+				if err != nil {
+					fmt.Println("Error: ", err)
+					return -1
+				}
+				return num
+			})
+			dest, source, rng := _map[0], _map[1], _map[2]
+
+			for s_idx, seed := range seeds {
+				if !modified[s_idx] && seed >= source && seed < source+rng {
+					modified[s_idx] = true
+					seeds[s_idx] = dest + (seed - source)
+				}
+			}
+			i += 1
+		}
+		fmt.Println(seeds)
+
+		i += 1
+	}
+
+	result := slices.Min(seeds)
 	fmt.Println(result)
 }
